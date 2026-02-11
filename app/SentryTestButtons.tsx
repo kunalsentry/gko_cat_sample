@@ -126,19 +126,16 @@ export default function SentryTestButtons() {
 
             <button
               onClick={() => {
-                // Track test message with breadcrumb
-                Sentry.addBreadcrumb({
-                  category: 'test',
-                  message: 'User sent manual test message',
-                  level: 'info',
-                  data: {
-                    test_type: 'manual_message',
-                    source: 'test_button',
-                  },
+                // Capture structured log with custom attributes
+                Sentry.logger.info('Test message button clicked', {
+                  action: 'test_message_sent',
+                  component: 'SentryTestButtons',
+                  timestamp: new Date().toISOString(),
+                  userAction: 'manual_test',
+                  source: 'test_button',
                 });
 
-                Sentry.captureMessage('Sentry Test Message - User clicked test button', 'info');
-                alert('Test message sent to Sentry!');
+                alert('Test log sent to Sentry!');
               }}
               style={{
                 padding: '10px 20px',

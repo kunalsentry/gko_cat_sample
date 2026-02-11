@@ -23,6 +23,17 @@ async function getCatFact(): Promise<string> {
         cache: 'no-store', // Ensures fresh data on every request
       });
 
+      // Randomly introduce latency on 30% of requests
+      const shouldDelay = Math.random() < 0.3;
+      if (shouldDelay) {
+        const delayMs = Math.floor(Math.random() * 4000) + 1000; // 1-5 seconds
+        apiLogger.warn('Introducing artificial latency for performance testing', {
+          delayMs,
+          delaySeconds: (delayMs / 1000).toFixed(2),
+        });
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+      }
+
       const duration = Date.now() - startTime;
 
       if (!res.ok) {

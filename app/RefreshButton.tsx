@@ -1,9 +1,28 @@
 'use client';
 
+import * as Sentry from '@sentry/nextjs';
+
 export default function RefreshButton() {
+  const handleRefresh = () => {
+    console.log('[Cat Facts] User clicked refresh button');
+
+    // Add breadcrumb for user interaction
+    Sentry.addBreadcrumb({
+      category: 'ui.click',
+      message: 'User clicked refresh button',
+      level: 'info',
+      data: {
+        component: 'RefreshButton',
+        action: 'page_reload',
+      },
+    });
+
+    window.location.reload();
+  };
+
   return (
     <button
-      onClick={() => window.location.reload()}
+      onClick={handleRefresh}
       style={{
         padding: '12px 30px',
         fontSize: '1rem',

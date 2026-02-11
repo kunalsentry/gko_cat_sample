@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import ClientMetrics from "./ClientMetrics";
 
 export const metadata: Metadata = {
   title: "Cat Facts",
@@ -13,7 +14,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <ClientMetrics />
+        {children}
+      </body>
     </html>
   );
 }

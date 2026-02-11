@@ -48,3 +48,60 @@ This app uses the [catfact.ninja API](https://catfact.ninja/) which returns a ra
 - React 19
 - TypeScript
 - Server-Side Rendering
+- Sentry (Error Monitoring & Performance Tracking)
+
+## Sentry Setup
+
+This project is configured with Sentry for error monitoring and performance tracking.
+
+### Initial Configuration
+
+1. **Create a Sentry account** at [sentry.io](https://sentry.io) if you don't have one
+
+2. **Create a new Sentry project** for Next.js
+
+3. **Set up environment variables**:
+
+   Copy the example files and fill in your Sentry credentials:
+   ```bash
+   cp .env.local.example .env.local
+   cp .env.sentry-build-plugin.example .env.sentry-build-plugin
+   ```
+
+   Update `.env.local` with your DSN:
+   ```bash
+   NEXT_PUBLIC_SENTRY_DSN=https://your-dsn@your-instance.ingest.sentry.io/your-project-id
+   ```
+
+   Update `.env.sentry-build-plugin` with your auth token:
+   ```bash
+   SENTRY_AUTH_TOKEN=your-auth-token-here
+   SENTRY_ORG=your-org-slug
+   SENTRY_PROJECT=your-project-slug
+   ```
+
+4. **Get your credentials from Sentry**:
+   - **DSN**: Go to Settings → Projects → [Your Project] → Client Keys (DSN)
+   - **Auth Token**: Go to Settings → Account → API → Auth Tokens → Create New Token
+   - **Organization Slug**: Found in your Sentry URL (sentry.io/organizations/YOUR-ORG-SLUG/)
+   - **Project Slug**: Found in your project settings
+
+### Testing Sentry
+
+After configuration, test that Sentry is working by triggering an error in your application.
+
+### Features Enabled
+
+- **Error Tracking**: Automatically captures unhandled errors and exceptions
+- **Performance Monitoring**: Tracks application performance and slow transactions
+- **Session Replay**: Records user sessions (configurable sample rate)
+- **Source Maps**: Automatically uploads source maps during build for better stack traces
+- **Breadcrumbs**: Tracks user actions leading up to errors
+
+### Configuration Files
+
+- `sentry.client.config.ts` - Client-side Sentry configuration
+- `sentry.server.config.ts` - Server-side Sentry configuration
+- `sentry.edge.config.ts` - Edge runtime Sentry configuration
+- `instrumentation.ts` - Server instrumentation hook
+- `next.config.ts` - Next.js config with Sentry webpack plugin

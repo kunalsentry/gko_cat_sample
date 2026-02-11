@@ -4,7 +4,7 @@ import * as Sentry from '@sentry/nextjs';
 
 export default function RefreshButton() {
   const handleRefresh = () => {
-    console.log('[Cat Facts] User clicked refresh button');
+    console.log('[UI] User clicked refresh button');
 
     // Add breadcrumb for user interaction
     Sentry.addBreadcrumb({
@@ -14,6 +14,17 @@ export default function RefreshButton() {
       data: {
         component: 'RefreshButton',
         action: 'page_reload',
+        timestamp: new Date().toISOString(),
+      },
+    });
+
+    // Track custom event (metrics alternative for client-side)
+    Sentry.captureMessage('User clicked refresh button', {
+      level: 'info',
+      tags: {
+        event_type: 'user_interaction',
+        component: 'RefreshButton',
+        action: 'refresh',
       },
     });
 

@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "sentry": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@sentry/mcp-server@latest"
+      ],
+      "env": {
+        "SENTRY_ORG": "kunal-test-org",
+        "SENTRY_PROJECT": "gko_cat"
+      }
+    }
+  }
+}

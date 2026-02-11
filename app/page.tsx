@@ -34,6 +34,17 @@ async function getCatFact(): Promise<string> {
           duration: `${duration}ms`,
         });
 
+        // Track failure metrics
+        apiLogger.trackCounter('api_calls.failed', 1, {
+          endpoint: '/fact',
+          status_code: res.status.toString(),
+          api: 'catfact.ninja',
+        });
+
+        apiLogger.trackDistribution('failed_request_duration', duration, 'millisecond', {
+          status_code: res.status.toString(),
+        });
+
         // Capture with additional context
         Sentry.captureException(error, {
           tags: {
@@ -66,6 +77,26 @@ async function getCatFact(): Promise<string> {
       Sentry.setMeasurement('fact_length', data.length, 'character');
       Sentry.setTag('cat_fact_length', data.length > 100 ? 'long' : 'short');
 
+      // Track custom metrics with Sentry.metrics
+      apiLogger.trackDistribution('response_time', duration, 'millisecond', {
+        endpoint: '/fact',
+        status: 'success',
+      });
+
+      apiLogger.trackDistribution('fact_length', data.length, 'character', {
+        category: data.length > 100 ? 'long' : 'short',
+      });
+
+      apiLogger.trackCounter('api_calls.success', 1, {
+        endpoint: '/fact',
+        api: 'catfact.ninja',
+      });
+
+      // Track gauge for current fact length
+      apiLogger.trackGauge('current_fact_length', data.length, {
+        endpoint: '/fact',
+      });
+
       return data.fact;
     } catch (error) {
       const duration = Date.now() - startTime;
@@ -75,6 +106,12 @@ async function getCatFact(): Promise<string> {
         url: 'https://catfact.ninja/fact',
       });
 
+      // Track exception metrics
+      apiLogger.trackCounter('api_calls.exception', 1, {
+        endpoint: '/fact',
+        error_type: error instanceof Error ? error.name : 'unknown',
+      });
+
       return 'Failed to load cat fact. Please refresh the page to try again.';
     }
   });
@@ -82,6 +119,11 @@ async function getCatFact(): Promise<string> {
 
 export default async function Home() {
   apiLogger.info('Rendering cat facts home page');
+
+  // Track page view
+  apiLogger.trackCounter('page.views', 1, {
+    page: 'home',
+  });
 
   Sentry.addBreadcrumb({
     category: 'navigation',
@@ -93,6 +135,11 @@ export default async function Home() {
 
   apiLogger.info('Page render complete', {
     factLength: catFact.length,
+  });
+
+  // Track successful page renders
+  apiLogger.trackCounter('page.renders.success', 1, {
+    page: 'home',
   });
 
   return (

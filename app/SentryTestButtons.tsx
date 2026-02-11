@@ -6,10 +6,26 @@ import { useState } from 'react';
 export default function SentryTestButtons() {
   const [showTests, setShowTests] = useState(false);
 
+  const handleToggle = () => {
+    const newState = !showTests;
+    setShowTests(newState);
+
+    // Track test panel toggle with breadcrumb
+    Sentry.addBreadcrumb({
+      category: 'ui.interaction',
+      message: `Test panel ${newState ? 'shown' : 'hidden'}`,
+      level: 'info',
+      data: {
+        component: 'SentryTestButtons',
+        action: newState ? 'show' : 'hide',
+      },
+    });
+  };
+
   return (
     <div style={{ marginTop: '20px', textAlign: 'center' }}>
       <button
-        onClick={() => setShowTests(!showTests)}
+        onClick={handleToggle}
         style={{
           padding: '8px 20px',
           fontSize: '0.9rem',
@@ -47,6 +63,17 @@ export default function SentryTestButtons() {
           }}>
             <button
               onClick={() => {
+                // Track test button click
+                Sentry.addBreadcrumb({
+                  category: 'test',
+                  message: 'User triggered client-side test error',
+                  level: 'info',
+                  data: {
+                    test_type: 'client_error',
+                    source: 'test_button',
+                  },
+                });
+
                 throw new Error('Sentry Client-side Test Error');
               }}
               style={{
@@ -65,6 +92,17 @@ export default function SentryTestButtons() {
 
             <button
               onClick={async () => {
+                // Track test button click
+                Sentry.addBreadcrumb({
+                  category: 'test',
+                  message: 'User triggered server-side test error',
+                  level: 'info',
+                  data: {
+                    test_type: 'server_error',
+                    source: 'test_button',
+                  },
+                });
+
                 try {
                   const response = await fetch('/api/sentry-example-api');
                   await response.json();
@@ -88,6 +126,17 @@ export default function SentryTestButtons() {
 
             <button
               onClick={() => {
+                // Track test message with breadcrumb
+                Sentry.addBreadcrumb({
+                  category: 'test',
+                  message: 'User sent manual test message',
+                  level: 'info',
+                  data: {
+                    test_type: 'manual_message',
+                    source: 'test_button',
+                  },
+                });
+
                 Sentry.captureMessage('Sentry Test Message - User clicked test button', 'info');
                 alert('Test message sent to Sentry!');
               }}
